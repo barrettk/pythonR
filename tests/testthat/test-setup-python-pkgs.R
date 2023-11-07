@@ -6,4 +6,8 @@ testthat::test_that("python setup", {
   }, error = identity)
 
   testthat::expect_true(is.list(py_env))
+  expect_equal(
+    names(py_env),
+    c("env_name", "env_path", "config", "installed_pkgs", "avail_conda_envirs")
+  )
 })
