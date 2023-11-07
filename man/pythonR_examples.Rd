@@ -13,6 +13,10 @@ get_py_example(example = "py_add")
 
 pythonR_examples
 }
+\arguments{
+\item{example}{The name of an example to load. See \code{ls(pythonR_examples)} for
+options.}
+}
 \description{
 Environment example python functions
 
@@ -21,7 +25,7 @@ Get python example
 pythonR example functions
 }
 \examples{
-
+\dontrun{
 # Get list of available examples.
 ls(pythonR_examples)
 
@@ -34,6 +38,6 @@ get("py_array", envir = pythonR_examples)
 # Assign the function to use it
 py_add <- get_py_example("py_add")
 py_add(3, 4)
-
+}
 }
 \keyword{datasets}

@@ -8,7 +8,7 @@ EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE
 #'
 #'
 #' @examples
-#'
+#' \dontrun{
 #' # Get list of available examples.
 #' ls(pythonR_examples)
 #'
@@ -21,7 +21,7 @@ EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE
 #' # Assign the function to use it
 #' py_add <- get_py_example("py_add")
 #' py_add(3, 4)
-#'
+#'}
 #' @name pythonR_examples
 NULL
 
@@ -29,21 +29,25 @@ NULL
 #' Get python example
 #'
 #' @rdname pythonR_examples
+#'
+#' @param example The name of an example to load. See `ls(pythonR_examples)` for
+#'        options.
+#'
 #' @export
 get_py_example <- function(example = "py_add"){
   checkmate::assert_true(example %in% ls(pythonR_examples))
-  example <- get(example, envir = pythonR_examples)
-  eval(example)
+  example_func <- get(example, envir = pythonR_examples)
+  eval(example_func)
 }
 
-py_add <- "
-#' Simple python function
-#'
-#' @param x a number
-#' @param y a number
-#'
-#' @details
-#' This function does not require imports or virtual environment (much faster)
+py_add <- "{
+# Simple python function
+#
+# @param x a number
+# @param y a number
+#
+# @details
+# This function does not require imports or virtual environment (much faster)
 py_add <- function(
     x = 5,
     y = 10
@@ -62,24 +66,23 @@ py_add <- function(
 
   return(sum)
 }
-"
+}"
 
 
-py_check_path <- "
-#' Check that file exists at location using python
-#'
-#' Example with working with `file_path` and importing a python package that
-#' *comes with python*
-#'
-#' @param file_path path to audio file
-#'
-#' @details
-#' The `os` python module comes with python:
-#' - Virtual environment (or conda) is only needed when we have to *install*
-#'   packages.
-#'
-#'
-#' @keywords internal
+py_check_path <- "{
+# Check that file exists at location using python
+#
+# Example with working with `file_path` and importing a python package that
+# *comes with python*
+#
+# @param file_path path to audio file
+#
+# @details
+# The `os` python module comes with python:
+# - Virtual environment (or conda) is only needed when we have to *install*
+#   packages.
+#
+#
 py_check_path <- function(
     file_path = file.path(EXAMPLE_PYTHON_DIR, 'script-check-path.py')
 ){
@@ -102,12 +105,14 @@ py_check_path <- function(
 
   return(file_exists)
 }
-"
+}"
 
 
-py_array <- "
-#' Create list of arrays using pandas
-#'
+py_array <- "{
+# Create list of arrays using pandas
+#
+# Example that requires installing and importing other python packages
+#
 py_array <- function(){
 
   # Check that required packages for this function have been installed
@@ -149,7 +154,7 @@ py_array <- function(){
     )
   )
 }
-"
+}"
 
 
 
