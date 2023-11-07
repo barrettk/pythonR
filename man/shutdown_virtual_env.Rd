@@ -16,15 +16,10 @@ packages or virtual environments}
 Shut down virtual environment
 }
 \details{
-Potentially call this at some point
+Call this to shutdown a virtual environment
 
 This will shut down the environment...
 Shutting it down means you'd have to install the packages again, should we
-need them again. Given that, we should only shut this down -if we are done-
+need them again. Given that, you should only shut this down -if you are done-
 using the python packages.
-
-i.e. probably dont run this once per function, but after all python related functions
-are done (probably when the app closes, or maybe not at all (i.e. it runs for the
-whole session))
 }
-\keyword{internal}

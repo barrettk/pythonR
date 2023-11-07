@@ -31,4 +31,3 @@ Install python packages to an environment
 \details{
 see \code{?reticulate::py_install} for more details
 }
-\keyword{internal}

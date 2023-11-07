@@ -7,8 +7,6 @@ PYTHON_R_ENV <- "pythonR-python"
 utils::globalVariables("main")
 utils::globalVariables("builtins")
 
-#' Package directory containing example python scripts
-EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE)
 
 #' Set up a python environment with required packages
 #'
@@ -34,7 +32,7 @@ EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE
 #' If we use a virtual/conda environment, we are only using that for packages that dont
 #' come with base python. i.e. the user still needs to have python installed.
 #'
-#' An environment will be required for each new session of the app.
+#' An environment will be required for each new R session.
 #'
 #' For a virtual environment, the user would be installing these packages *every time*
 #' they want to run the app on a clean R session.
@@ -79,7 +77,7 @@ EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE
 #' @returns a named list of specifications pertaining to the python environment,
 #' including the packages that are installed there.
 #'
-#' @keywords internal
+#' @export
 setup_py_env <- function(
     py_pkgs = c("scipy", "pandas"),
     python_version = NULL,
@@ -93,6 +91,10 @@ setup_py_env <- function(
   checkmate::assert_true(python_is_installed())
 
   conda_name <- match.arg(conda_name)
+
+  if(nzchar(Sys.getenv("RETICULATE_PYTHON"))){
+    Sys.unsetenv("RETICULATE_PYTHON")
+  }
 
   if(isTRUE(virtual_env)){
     ### This currently doesnt work ### - cant import modules after installing them
@@ -172,7 +174,7 @@ setup_py_env <- function(
 #' @details
 #' see `?reticulate::py_install` for more details
 #'
-#' @keywords internal
+#' @export
 install_py_pkgs <- function(
     py_pkgs = c("scipy", "pandas"),
     virtual_env = FALSE,
@@ -195,12 +197,15 @@ install_py_pkgs <- function(
 
     py_pkgs_installed <- py_pkgs[py_pkgs %in% installed_pkgs$package] %>%
       paste(collapse = ", ")
-    msg <- paste0(
-      "The following packages have already been installed",
-      " (set `update = TRUE` to override). Skipping...",
-      glue::glue("\n\n{py_pkgs_installed}\n")
-    )
-    message(msg)
+    if(!rlang::is_empty(py_pkgs_installed)){
+      msg <- paste0(
+        "The following packages have already been installed",
+        " (set `update = TRUE` to override). Skipping...",
+        glue::glue("\n\n{py_pkgs_installed}\n")
+      )
+      message(msg)
+    }
+
     # filter list of packages to install
     py_pkgs <- py_pkgs[!(py_pkgs %in% installed_pkgs$package)]
   }
@@ -236,7 +241,7 @@ install_py_pkgs <- function(
 #' `scipy <- reticulate::import("scipy")`
 #'
 #'
-#' @keywords internal
+#' @export
 import_py_pkgs <- function(
     py_pkgs = c("scipy", "pandas"),
     envir = NULL
@@ -274,7 +279,7 @@ import_py_pkgs <- function(
 #'
 #' @param envir environment to load the main modules into
 #'
-#' @keywords internal
+#' @export
 import_main_py <- function(envir = NULL){
 
   if(is.null(envir)){
@@ -301,18 +306,15 @@ import_main_py <- function(envir = NULL){
 #'        packages or virtual environments
 #'
 #' @details
-#' Potentially call this at some point
+#' Call this to shutdown a virtual environment
 #'
 #' This will shut down the environment...
 #' Shutting it down means you'd have to install the packages again, should we
-#' need them again. Given that, we should only shut this down -if we are done-
+#' need them again. Given that, you should only shut this down -if you are done-
 #' using the python packages.
 #'
-#' i.e. probably dont run this once per function, but after all python related functions
-#' are done (probably when the app closes, or maybe not at all (i.e. it runs for the
-#' whole session))
 #'
-#' @keywords internal
+#' @export
 shutdown_virtual_env <- function(env_name = PYTHON_R_ENV, force = TRUE){
   if(reticulate::virtualenv_exists(env_name)){
     reticulate::virtualenv_remove(env_name, confirm = !force)
@@ -323,6 +325,12 @@ shutdown_virtual_env <- function(env_name = PYTHON_R_ENV, force = TRUE){
 }
 
 
+
+#' Helper function for ensuring required python packages are installed
+#'
+#' @param py_pkgs vector of python packages to check that are installed.
+#'
+#' @export
 check_py_pkgs_installed <- function(py_pkgs){
   pkgs_installed <- purrr::map_lgl(py_pkgs, function(pkg){
     reticulate::py_module_available(pkg)

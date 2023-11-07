@@ -18,4 +18,3 @@ See \verb{main$} and \verb{builtins$} after running this function
 Sourcing scripts \strong{after} importing the main modules will add those functions
 under \verb{main$}
 }
-\keyword{internal}

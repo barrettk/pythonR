@@ -46,7 +46,7 @@ and then \emph{import} packages one at a time within each function that needs th
 If we use a virtual/conda environment, we are only using that for packages that dont
 come with base python. i.e. the user still needs to have python installed.
 
-An environment will be required for each new session of the app.
+An environment will be required for each new R session.
 
 For a virtual environment, the user would be installing these packages \emph{every time}
 they want to run the app on a clean R session.
@@ -88,4 +88,3 @@ install_py_pkgs(py_pkgs = c('scipy'), virtual_env = TRUE)
 }
 
 }
-\keyword{internal}

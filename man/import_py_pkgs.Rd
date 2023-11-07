@@ -20,4 +20,3 @@ This function loops through \code{py_pkgs}, and does the equivalent of:
 or
 \code{scipy <- reticulate::import("scipy")}
 }
-\keyword{internal}
