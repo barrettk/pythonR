@@ -6,6 +6,8 @@ Descriptions:
 Packages:
   - devtools
   - pkgdown
+  - rmarkdown
+  - markdown
 
 Repos:
   - CRAN: https://cran.rstudio.com
