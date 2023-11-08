@@ -15,7 +15,7 @@
     }
 
     # make sure miniconda is installed:
-    miniconda_installed <- file.exists(is_miniconda_installed())
+    miniconda_installed <- miniconda_is_installed()
     if(isFALSE(miniconda_installed)){
       user_permission <- utils::askYesNo("Install miniconda? Downloads ~50MB and takes time")
       if (isTRUE(user_permission)) {

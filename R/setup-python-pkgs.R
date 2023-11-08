@@ -90,11 +90,10 @@ setup_py_env <- function(
   # Make sure python is installed
   checkmate::assert_true(python_is_installed())
 
-  conda_name <- match.arg(conda_name)
+  # Dont use RETICULATE_PYTHON
+  withr::local_envvar(RETICULATE_PYTHON = NA)
 
-  if(nzchar(Sys.getenv("RETICULATE_PYTHON"))){
-    Sys.unsetenv("RETICULATE_PYTHON")
-  }
+  conda_name <- match.arg(conda_name)
 
   if(isTRUE(virtual_env)){
     ### This currently doesnt work ### - cant import modules after installing them
@@ -183,7 +182,8 @@ install_py_pkgs <- function(
     python_version = NULL
 ){
 
-
+  # Dont use RETICULATE_PYTHON
+  withr::local_envvar(RETICULATE_PYTHON = NA)
 
   py_install_fn <- ifelse(isTRUE(virtual_env),
                           reticulate::virtualenv_install,

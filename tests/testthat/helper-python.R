@@ -18,3 +18,9 @@ skip_if_no_python <- function() {
   if (!have_python)
     testthat::skip("python not available for testing")
 }
+
+skip_if_no_conda <- function() {
+  have_conda <- miniconda_is_installed()
+  if (!(have_conda))
+    testthat::skip("miniconda not available for testing")
+}
