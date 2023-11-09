@@ -124,7 +124,6 @@ setup_py_env <- function(
     reticulate::use_condaenv(condaenv = env_name,  required = required)
     message(glue::glue("a conda environment has been loaded at: {env_path}"))
   }else if(py_env == "virtual"){
-    ### This currently doesnt work ### - cant import modules after installing them
     # create a new environment
     env_path <- tryCatch(reticulate::virtualenv_create(env_name), error = identity)
 
