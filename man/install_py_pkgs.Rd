@@ -6,7 +6,7 @@
 \usage{
 install_py_pkgs(
   py_pkgs = c("scipy", "pandas"),
-  virtual_env = FALSE,
+  py_env = c("conda", "virtual"),
   env_name = PYTHON_R_ENV,
   update = FALSE,
   python_version = NULL
@@ -15,9 +15,9 @@ install_py_pkgs(
 \arguments{
 \item{py_pkgs}{vector of python packages to install}
 
-\item{virtual_env}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, use a virtual environment.}
+\item{py_env}{Environment type. Either a conda or virtual environment.}
 
-\item{env_name}{a virtual environment name}
+\item{env_name}{an environment name to use for \strong{new} virtual or conda environments.}
 
 \item{update}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, update packages that are
 already installed. Otherwise skip their installation.}
@@ -30,4 +30,7 @@ Install python packages to an environment
 }
 \details{
 see \code{?reticulate::py_install} for more details
+}
+\seealso{
+\link{setup_py_env}
 }

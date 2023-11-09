@@ -7,10 +7,11 @@
 setup_py_env(
   py_pkgs = c("scipy", "pandas"),
   python_version = NULL,
-  virtual_env = FALSE,
+  py_env = c("conda", "virtual"),
   env_name = PYTHON_R_ENV,
   conda_name = c("base", "r-reticulate", PYTHON_R_ENV),
-  update = FALSE
+  update = FALSE,
+  required = FALSE
 )
 }
 \arguments{
@@ -19,11 +20,11 @@ setup_py_env(
 \item{python_version}{The requested Python version. Ignored when attempting
 to install with a Python virtual environment.}
 
-\item{virtual_env}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, use a virtual environment.}
+\item{py_env}{Environment type. Either a conda or virtual environment.}
 
-\item{env_name}{a virtual environment name}
+\item{env_name}{an environment name to use for \strong{new} virtual or conda environments.}
 
-\item{conda_name}{name of the conda environment to use if \code{virtual_env = FALSE}.
+\item{conda_name}{name of the conda environment to use if \code{py_env = "conda"}.
 Run \code{reticulate::conda_list()} to see a list of available conda environments.
 The \code{conda_name} should match the \code{name} element of that list if you are loading
 \emph{an existing} conda environment. If \code{conda_name} is not found in this list, a new
@@ -31,6 +32,11 @@ one will be created matching the name of \code{env_name}.}
 
 \item{update}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, update packages that are
 already installed. Otherwise skip their installation.}
+
+\item{required}{Logical (\code{TRUE}/\code{FALSE}). Is the requested copy of Python required?
+If TRUE, an error will be emitted if the requested copy of Python does not exist.
+If FALSE, the request is taken as a hint only, and scanning for other versions
+will still proceed. See \code{\link[reticulate:use_python]{reticulate::use_condaenv()}} for more details.}
 }
 \value{
 a named list of specifications pertaining to the python environment,
@@ -75,15 +81,15 @@ py_env <- setup_py_env(
 )
 
 ## With a virtual environment ##
-py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), virtual_env = TRUE)
+py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), py_env = "virtual")
 py_env
 
 # shutdown virtual environment
 shutdown_virtual_env(py_env$env_name)
 
 # Installing a package after setup (works with both environment types)
-setup_py_env(py_pkgs = c("pandas", "numpy"), virtual_env = TRUE)
-install_py_pkgs(py_pkgs = c('scipy'), virtual_env = TRUE)
+py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
+install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
 
 }
 

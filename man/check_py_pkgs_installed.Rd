@@ -4,10 +4,14 @@
 \alias{check_py_pkgs_installed}
 \title{Helper function for ensuring required python packages are installed}
 \usage{
-check_py_pkgs_installed(py_pkgs)
+check_py_pkgs_installed(py_pkgs, path = get_py_path(), warn = FALSE)
 }
 \arguments{
 \item{py_pkgs}{vector of python packages to check that are installed.}
+
+\item{path}{The path from which the module should be imported.}
+
+\item{warn}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, warn instead of throwing an error.}
 }
 \description{
 Helper function for ensuring required python packages are installed

@@ -4,19 +4,34 @@
 \alias{import_py_pkgs}
 \title{Import python packages into the environment}
 \usage{
-import_py_pkgs(py_pkgs = c("scipy", "pandas"), envir = NULL)
+import_py_pkgs(
+  py_pkgs = c("scipy", "pandas"),
+  envir = NULL,
+  path = get_py_path(),
+  delay_load = FALSE
+)
 }
 \arguments{
 \item{py_pkgs}{vector of python packages to install}
 
 \item{envir}{environment to load the main modules into}
+
+\item{path}{The path from which the module should be imported.}
+
+\item{delay_load}{Logical (\code{TRUE}/\code{FALSE}). Delay loading the module until it
+is first used? If FALSE, the module will be loaded immediately.
+See \code{\link[reticulate:import]{reticulate::import()}} for more information.}
 }
 \description{
 Import python packages into the environment
 }
 \details{
-This function loops through \code{py_pkgs}, and does the equivalent of:
-\code{py_pkg <- reticulate::import("py_pkg")}
-or
+This function loops through \code{py_pkgs}, and does the equivalent of the following,
+and assigns it to the parent environment:
+
 \code{scipy <- reticulate::import("scipy")}
+
+or
+
+\code{scipy <- reticulate::import_from_path("scipy", path = "path/to/module")}
 }

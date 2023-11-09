@@ -7,7 +7,7 @@
 shutdown_virtual_env(env_name = PYTHON_R_ENV, force = TRUE)
 }
 \arguments{
-\item{env_name}{a virtual environment name}
+\item{env_name}{an environment name to use for \strong{new} virtual or conda environments.}
 
 \item{force}{Logical (\code{TRUE}/\code{FALSE}). If \code{FALSE}, confirm before removing
 packages or virtual environments}

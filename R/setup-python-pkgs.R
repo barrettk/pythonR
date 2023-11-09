@@ -13,15 +13,19 @@ utils::globalVariables("builtins")
 #' @param py_pkgs vector of python packages to install
 #' @param python_version The requested Python version. Ignored when attempting
 #'        to install with a Python virtual environment.
-#' @param virtual_env Logical (`TRUE`/`FALSE`). If `TRUE`, use a virtual environment.
-#' @param env_name a virtual environment name
-#' @param conda_name name of the conda environment to use if `virtual_env = FALSE`.
+#' @param py_env Environment type. Either a conda or virtual environment.
+#' @param env_name an environment name to use for **new** virtual or conda environments.
+#' @param conda_name name of the conda environment to use if `py_env = "conda"`.
 #'        Run `reticulate::conda_list()` to see a list of available conda environments.
 #'        The `conda_name` should match the `name` element of that list if you are loading
 #'        *an existing* conda environment. If `conda_name` is not found in this list, a new
 #'        one will be created matching the name of `env_name`.
 #' @param update Logical (`TRUE`/`FALSE`). If `TRUE`, update packages that are
 #'        already installed. Otherwise skip their installation.
+#' @param required Logical (`TRUE`/`FALSE`). Is the requested copy of Python required?
+#'        If TRUE, an error will be emitted if the requested copy of Python does not exist.
+#'        If FALSE, the request is taken as a hint only, and scanning for other versions
+#'        will still proceed. See [reticulate::use_condaenv()] for more details.
 #'
 #' @details
 #'
@@ -62,15 +66,15 @@ utils::globalVariables("builtins")
 #' )
 #'
 #' ## With a virtual environment ##
-#' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), virtual_env = TRUE)
+#' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), py_env = "virtual")
 #' py_env
 #'
 #' # shutdown virtual environment
 #' shutdown_virtual_env(py_env$env_name)
 #'
 #' # Installing a package after setup (works with both environment types)
-#' setup_py_env(py_pkgs = c("pandas", "numpy"), virtual_env = TRUE)
-#' install_py_pkgs(py_pkgs = c('scipy'), virtual_env = TRUE)
+#' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
+#' install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
 #'
 #' }
 #'
@@ -81,42 +85,28 @@ utils::globalVariables("builtins")
 setup_py_env <- function(
     py_pkgs = c("scipy", "pandas"),
     python_version = NULL,
-    virtual_env = FALSE,
+    py_env = c("conda", "virtual"),
     env_name = PYTHON_R_ENV,
     conda_name = c("base", "r-reticulate", PYTHON_R_ENV),
-    update = FALSE
+    update = FALSE,
+    required = FALSE
 ){
 
   # Make sure python is installed
   checkmate::assert_true(python_is_installed())
 
-  # Dont use RETICULATE_PYTHON
-  withr::local_envvar(RETICULATE_PYTHON = NA)
-
+  py_env <- match.arg(py_env)
   conda_name <- match.arg(conda_name)
 
-  if(isTRUE(virtual_env)){
-    ### This currently doesnt work ### - cant import modules after installing them
-    # create a new environment
-    env_path <- tryCatch(reticulate::virtualenv_create(env_name), error = identity)
-
-    # make sure the environment was created
-    env_exists <- !inherits(env_path, "error") && reticulate::virtualenv_exists(env_name)
-    if(isFALSE(env_exists)){
-      cli::cli_abort(glue::glue("env {env_name} could not be created:\n\n {env_path$message}"))
-    }
-
-    # Configure vitual environment
-    reticulate::use_virtualenv(virtualenv = env_path, required = TRUE)
-    message(glue::glue("a virtual environment has been loaded at: {env_path}"))
-  }else{
+  if(py_env == "conda"){
     conda_envir_lst <- reticulate::conda_list()
     conda_envirs <- conda_envir_lst %>% dplyr::pull(.data$name)
 
     # pull previous conda environment if it exists, otherwise create new one
     if(conda_name %in% conda_envirs){
       # loads a local conda library
-      env_path <- conda_envir_lst %>% dplyr::filter(.data$name == conda_name) %>% dplyr::pull(.data$python)
+      env_path <- conda_envir_lst %>% dplyr::filter(.data$name == conda_name) %>%
+        dplyr::pull(.data$python)
       # overwrite env_name with conda_name
       env_name <- conda_name
     }else{
@@ -130,18 +120,35 @@ setup_py_env <- function(
     }
 
     # Configure conda environment
-    reticulate::use_condaenv(condaenv = env_path, required = TRUE)
+    Sys.setenv(RETICULATE_PYTHON_ENV = env_path)
+    reticulate::use_condaenv(condaenv = env_name,  required = required)
     message(glue::glue("a conda environment has been loaded at: {env_path}"))
+  }else if(py_env == "virtual"){
+    ### This currently doesnt work ### - cant import modules after installing them
+    # create a new environment
+    env_path <- tryCatch(reticulate::virtualenv_create(env_name), error = identity)
+
+    # make sure the environment was created
+    env_exists <- !inherits(env_path, "error") && reticulate::virtualenv_exists(env_name)
+    if(isFALSE(env_exists)){
+      cli::cli_abort(glue::glue("env {env_name} could not be created:\n\n {env_path$message}"))
+    }
+
+    # Configure vitual environment
+    Sys.setenv(RETICULATE_PYTHON_ENV = env_path)
+    reticulate::use_virtualenv(virtualenv = env_path, required = required)
+    message(glue::glue("a virtual environment has been loaded at: {env_path}"))
   }
 
   # configure python in environment
-  config <- reticulate::py_config()
+  # suppress any warnings (will be returned via `use_condaenv` or `use_virtualenv`)
+  config <- reticulate::py_config() %>% suppressWarnings()
 
   # install python packages
   installed_pkgs <- install_py_pkgs(
     py_pkgs,
     env_name = env_name,
-    virtual_env = virtual_env,
+    py_env = py_env,
     update = update,
     python_version = python_version
   )
@@ -154,7 +161,7 @@ setup_py_env <- function(
   )
 
   # show all available conda environments if running a conda environment
-  if(isFALSE(virtual_env)){
+  if(py_env == "conda"){
     env_list <- c(
       env_list,
       list(
@@ -173,18 +180,20 @@ setup_py_env <- function(
 #' @details
 #' see `?reticulate::py_install` for more details
 #'
+#' @seealso [setup_py_env]
+#'
 #' @export
 install_py_pkgs <- function(
     py_pkgs = c("scipy", "pandas"),
-    virtual_env = FALSE,
+    py_env = c("conda", "virtual"),
     env_name = PYTHON_R_ENV,
     update = FALSE,
     python_version = NULL
 ){
 
-  # Dont use RETICULATE_PYTHON
-  withr::local_envvar(RETICULATE_PYTHON = NA)
+  py_env <- match.arg(py_env)
 
+  virtual_env <- (py_env == "virtual")
   py_install_fn <- ifelse(isTRUE(virtual_env),
                           reticulate::virtualenv_install,
                           reticulate::conda_install
@@ -207,12 +216,14 @@ install_py_pkgs <- function(
     }
 
     # filter list of packages to install
-    py_pkgs <- py_pkgs[!(py_pkgs %in% installed_pkgs$package)]
+    to_install <- py_pkgs[!(py_pkgs %in% installed_pkgs$package)]
+  }else{
+    to_install <- py_pkgs
   }
 
 
-  if(!rlang::is_empty(py_pkgs)){
-    purrr::walk(py_pkgs, function(pkg){
+  if(!is.null(to_install) && !rlang::is_empty(to_install)){
+    purrr::walk(to_install, function(pkg){
       args <- list(pkg, python_version = python_version,
                    envname = env_name)
       do.call(py_install_fn, args)
@@ -223,6 +234,9 @@ install_py_pkgs <- function(
   installed_pkgs <- reticulate::py_list_packages(env_name) %>%
     tibble::as_tibble()
 
+  # Check that packages can be loaded - warn if not
+  check_py_pkgs_installed(py_pkgs, warn = TRUE)
+
   return(installed_pkgs)
 }
 
@@ -232,19 +246,28 @@ install_py_pkgs <- function(
 #'
 #' @inheritParams install_py_pkgs
 #' @inheritParams import_main_py
-#'
+#' @inheritParams py_module_available
+#' @param delay_load Logical (`TRUE`/`FALSE`). Delay loading the module until it
+#'        is first used? If FALSE, the module will be loaded immediately.
+#'        See [reticulate::import()] for more information.
 #' @details
 #'
-#' This function loops through `py_pkgs`, and does the equivalent of:
-#' `py_pkg <- reticulate::import("py_pkg")`
-#' or
+#' This function loops through `py_pkgs`, and does the equivalent of the following,
+#' and assigns it to the parent environment:
+#'
 #' `scipy <- reticulate::import("scipy")`
+#'
+#' or
+#'
+#' `scipy <- reticulate::import_from_path("scipy", path = "path/to/module")`
 #'
 #'
 #' @export
 import_py_pkgs <- function(
     py_pkgs = c("scipy", "pandas"),
-    envir = NULL
+    envir = NULL,
+    path = get_py_path(),
+    delay_load = FALSE
 ){
 
   if(is.null(envir)){
@@ -254,7 +277,11 @@ import_py_pkgs <- function(
   # import each package
   purrr::walk(py_pkgs, function(pkg_name){
     if(reticulate::py_module_available(pkg_name)){
-      pkg <- reticulate::import(pkg_name)
+      pkg <- if(is.na(path)){
+        reticulate::import(pkg_name, delay_load = delay_load)
+      }else{
+        reticulate::import_from_path(pkg_name, path = path, delay_load = delay_load)
+      }
       assign(pkg_name, pkg, envir = envir)
     }else{
       cli::cli_warn(
@@ -329,25 +356,66 @@ shutdown_virtual_env <- function(env_name = PYTHON_R_ENV, force = TRUE){
 #' Helper function for ensuring required python packages are installed
 #'
 #' @param py_pkgs vector of python packages to check that are installed.
+#' @inheritParams py_module_available
+#' @param warn Logical (`TRUE`/`FALSE`). If `TRUE`, warn instead of throwing an error.
 #'
 #' @export
-check_py_pkgs_installed <- function(py_pkgs){
-  pkgs_installed <- purrr::map_lgl(py_pkgs, function(pkg){
-    reticulate::py_module_available(pkg)
+check_py_pkgs_installed <- function(py_pkgs, path = get_py_path(), warn = FALSE){
+  pkgs_installed <- purrr::map_dfr(py_pkgs, function(pkg){
+    py_module_available(pkg, path)
   })
+  pkgs_avail <- pkgs_installed$availabile
 
-  if(any(!pkgs_installed)){
-    pkgs_not_installed <- py_pkgs[!pkgs_installed] %>% paste(collapse = ", ")
-    pkgs_not_installed_txt <- paste0("'", py_pkgs[!pkgs_installed], "'") %>%
-      paste(collapse = ", ")
-    cli::cli_abort(
+  if(!is.null(pkgs_avail) && any(!pkgs_avail)){
+    pkgs_not_installed <- py_pkgs[!pkgs_avail] %>% paste(collapse = ", ")
+    errors <- paste("{.code", pkgs_installed$error[!pkgs_avail], "}")
+    alert_fn <- ifelse(isTRUE(warn), cli::cli_warn, cli::cli_abort)
+
+    cli::cli_div(theme = list(span.emph = list(color = "green"), span.code = list(color = "red")))
+    alert_fn(
       c(
-        "x" = glue::glue("The following python modules are not installed: {pkgs_not_installed}"),
-        "i" = glue::glue("Did you run {.code py_env <- setup_py_env(py_pkgs = c({{pkgs_not_installed_txt}}))}?",.open = "{{", .close = "}}")
+        "x" = glue::glue(
+          "The following python modules are not available: {.emph {{pkgs_not_installed}}}",
+          .open = "{{", .close = "}}"),
+        "i" = "Reason(s):",
+        " " = "",
+        errors
       )
     )
   }
 
-  return(any(pkgs_installed))
+  return(invisible(all(pkgs_avail)))
 }
 
+
+#' Modified version of [reticulate::py_module_available()]
+#'
+#' @param module The name of the Python module.
+#' @param path The path from which the module should be imported.
+#'
+#' @keywords internal
+py_module_available <- function(module, path){
+  mod_avail <- tryCatch({
+    if(is.na(path)){
+      reticulate::import(module)
+      path <- Sys.getenv("RETICULATE_PYTHON")
+    }else{
+      reticulate::import_from_path(module, path = path)
+    }
+    tibble::tibble(
+      module = module, availabile = TRUE, path = path, error = NA_character_
+    )
+  }, error = function(err){
+    tibble::tibble(
+      module = module, availabile = FALSE, path = path, error = err$msg
+    )
+  })
+}
+
+get_py_path <- function(){
+  py_path <- Sys.getenv("RETICULATE_PYTHON_ENV", unset = NA)
+  if(is.na(py_path)){
+    py_path <- Sys.getenv("RETICULATE_PYTHON", unset = NA)
+  }
+  return(py_path)
+}
