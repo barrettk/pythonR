@@ -121,7 +121,7 @@ setup_py_env <- function(
 
     # Configure conda environment
     Sys.setenv(RETICULATE_PYTHON_ENV = env_path)
-    reticulate::use_condaenv(condaenv = env_name,  required = required)
+    reticulate::use_condaenv(condaenv = env_path,  required = required)
     message(glue::glue("a conda environment has been loaded at: {env_path}"))
   }else if(py_env == "virtual"){
     # create a new environment
