@@ -2,6 +2,7 @@
 
 export("%>%")
 export(check_py_pkgs_installed)
+export(get_conda_paths)
 export(get_py_example)
 export(import_main_py)
 export(import_py_pkgs)

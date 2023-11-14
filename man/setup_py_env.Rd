@@ -2,6 +2,8 @@
 % Please edit documentation in R/setup-python-pkgs.R
 \name{setup_py_env}
 \alias{setup_py_env}
+\alias{install_py_pkgs}
+\alias{get_conda_paths}
 \title{Set up a python environment with required packages}
 \usage{
 setup_py_env(
@@ -9,10 +11,21 @@ setup_py_env(
   python_version = NULL,
   py_env = c("conda", "virtual"),
   env_name = PYTHON_R_ENV,
-  conda_path = get_conda_envs(),
+  conda_env = get_conda_envs(),
+  conda_path = NULL,
   update = FALSE,
   required = FALSE
 )
+
+install_py_pkgs(
+  py_pkgs = c("scipy", "pandas"),
+  py_env = c("conda", "virtual"),
+  env_name = PYTHON_R_ENV,
+  update = FALSE,
+  python_version = NULL
+)
+
+get_conda_paths()
 }
 \arguments{
 \item{py_pkgs}{vector of python packages to install}
@@ -24,11 +37,14 @@ to install with a Python virtual environment.}
 
 \item{env_name}{an environment name to use for \strong{new} virtual or conda environments.}
 
-\item{conda_path}{path of the conda environment to use if \code{py_env = "conda"}.
+\item{conda_env}{path of the conda environment to use if \code{py_env = "conda"}.
 Run \code{reticulate::conda_list()} to see a list of available conda environments.
-The \code{conda_path} should match the \code{python} element of that list if you are loading
-\emph{an existing} conda environment. If \code{conda_path} is not found in this list, a new
+The \code{conda_env} should match the \code{python} element of that list if you are loading
+\emph{an existing} conda environment. If \code{conda_env} is not found in this list, a new
 one will be created matching the name of \code{env_name}.}
+
+\item{conda_path}{The path to a conda executable. If \code{NULL}, will default to the first one found.
+See \code{get_conda_paths()} for details.}
 
 \item{update}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, update packages that are
 already installed. Otherwise skip their installation.}
@@ -60,7 +76,19 @@ they want to run the app on a clean R session.
 For a conda environment, users would only need to install the required
 packages once. I think this could be preferable, and would offer significant
 speed improvements once the packages have been installed once.
+
+see \code{?reticulate::py_install} for more details
+
+Inspired from \code{reticulate:::find_conda()}, though this function
+will return all paths instead of the first one found in a hierarchy of priorities
 }
+\section{Functions}{
+\itemize{
+\item \code{install_py_pkgs()}: Install python packages to an environment
+
+\item \code{get_conda_paths()}: Search for conda installations
+
+}}
 \note{
 You must restart your R session if you want to alternate between both environment types
 }
@@ -76,7 +104,7 @@ py_env
 # note: you must restart your R session if you've already generated an environment
 py_env <- setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
-  conda_path = "/data/.conda/envs/base/bin/python",
+  conda_env = "/data/.conda/envs/base/bin/python",
   update = TRUE
 )
 
@@ -93,4 +121,7 @@ install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
 
 }
 
+}
+\seealso{
+\link{import_py_pkgs}
 }

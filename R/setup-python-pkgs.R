@@ -15,11 +15,13 @@ utils::globalVariables("builtins")
 #'        to install with a Python virtual environment.
 #' @param py_env Environment type. Either a conda or virtual environment.
 #' @param env_name an environment name to use for **new** virtual or conda environments.
-#' @param conda_path path of the conda environment to use if `py_env = "conda"`.
+#' @param conda_env path of the conda environment to use if `py_env = "conda"`.
 #'        Run `reticulate::conda_list()` to see a list of available conda environments.
-#'        The `conda_path` should match the `python` element of that list if you are loading
-#'        *an existing* conda environment. If `conda_path` is not found in this list, a new
+#'        The `conda_env` should match the `python` element of that list if you are loading
+#'        *an existing* conda environment. If `conda_env` is not found in this list, a new
 #'        one will be created matching the name of `env_name`.
+#' @param conda_path The path to a conda executable. If `NULL`, will default to the first one found.
+#'        See `get_conda_paths()` for details.
 #' @param update Logical (`TRUE`/`FALSE`). If `TRUE`, update packages that are
 #'        already installed. Otherwise skip their installation.
 #' @param required Logical (`TRUE`/`FALSE`). Is the requested copy of Python required?
@@ -61,7 +63,7 @@ utils::globalVariables("builtins")
 #' # note: you must restart your R session if you've already generated an environment
 #' py_env <- setup_py_env(
 #'   py_pkgs = c("pandas", "numpy", "scipy"),
-#'   conda_path = "/data/.conda/envs/base/bin/python",
+#'   conda_env = "/data/.conda/envs/base/bin/python",
 #'   update = TRUE
 #' )
 #'
@@ -87,7 +89,8 @@ setup_py_env <- function(
     python_version = NULL,
     py_env = c("conda", "virtual"),
     env_name = PYTHON_R_ENV,
-    conda_path = get_conda_envs(),
+    conda_env = get_conda_envs(),
+    conda_path = NULL,
     update = FALSE,
     required = FALSE
 ){
@@ -95,34 +98,44 @@ setup_py_env <- function(
   # Make sure python is installed
   checkmate::assert_true(python_is_installed())
 
+  # Set conda path
+  if(is.null(conda_path)){
+    conda_path <- get_conda_paths()[1]
+  }
+
   py_env <- match.arg(py_env)
-  conda_path <- conda_path[1]
 
   if(py_env == "conda"){
     conda_envir_lst <- reticulate::conda_list()
     conda_envirs <- conda_envir_lst %>% dplyr::pull(.data$python)
 
+    # choose first environment if multiple are provided via `get_conda_envs`
+    conda_env <- conda_env[1]
+
     # pull previous conda environment if it exists, otherwise create new one
-    if(!is.null(conda_path) && conda_path %in% conda_envirs){
+    if(!is.null(conda_env) && conda_env %in% conda_envirs){
       # loads a local conda library
-      conda_env <- conda_envir_lst %>% dplyr::filter(.data$python == conda_path)
-      env_path <- conda_env %>% dplyr::pull(.data$python)
-      # overwrite env_name with conda_name
-      env_name <- conda_env %>% dplyr::pull(.data$name)
+      conda_env_df <- conda_envir_lst %>% dplyr::filter(.data$python == conda_env)
+      env_path <- conda_env_df %>% dplyr::pull(.data$python)
+      # overwrite env_name with conda name
+      env_name <- conda_env_df %>% dplyr::pull(.data$name)
     }else{
       # Creates a local conda library
       env_path <- tryCatch(reticulate::conda_create(env_name), error = identity)
       # make sure the environment was created
-      env_exists <- !inherits(env_path, "error") && fs::file_exists(env_path)
+      env_exists <- !inherits(env_path, "error") && fs::file_exists(env_path) &&
+        reticulate::condaenv_exists(env_path)
       if(isFALSE(env_exists)){
         cli::cli_abort(glue::glue("env {env_name} could not be created:\n\n {env_path$message}"))
+      }else{
+        message(glue::glue("Created new conda environment ({env_name}) at: {env_path}"))
       }
     }
 
     # Configure conda environment
     Sys.setenv(RETICULATE_PYTHON_ENV = env_path)
-    reticulate::use_condaenv(condaenv = env_path,  required = required)
-    message(glue::glue("a conda environment has been loaded at: {env_path}"))
+    reticulate::use_condaenv(condaenv = env_path, conda = conda_path, required = required)
+    message(glue::glue("Loading conda environment {env_name}. Path: {env_path}"))
   }else if(py_env == "virtual"){
     # create a new environment
     env_path <- tryCatch(reticulate::virtualenv_create(env_name), error = identity)
@@ -136,7 +149,7 @@ setup_py_env <- function(
     # Configure vitual environment
     Sys.setenv(RETICULATE_PYTHON_ENV = env_path)
     reticulate::use_virtualenv(virtualenv = env_path, required = required)
-    message(glue::glue("a virtual environment has been loaded at: {env_path}"))
+    message(glue::glue("A virtual environment has been loaded at: {env_path}"))
   }
 
   # configure python in environment
@@ -172,14 +185,13 @@ setup_py_env <- function(
   return(env_list)
 }
 
-#' Install python packages to an environment
-#'
-#' @inheritParams setup_py_env
+
+#' @describeIn setup_py_env Install python packages to an environment
 #'
 #' @details
 #' see `?reticulate::py_install` for more details
 #'
-#' @seealso [setup_py_env]
+#' @seealso [import_py_pkgs]
 #'
 #' @export
 install_py_pkgs <- function(
@@ -422,4 +434,75 @@ get_py_path <- function(){
 get_conda_envs <- function(){
   conda_lst <- reticulate::conda_list()
   sort(conda_lst$python)
+}
+
+
+
+#' @describeIn setup_py_env Search for conda installations
+#' @details
+#' Inspired from `reticulate:::find_conda()`, though this function
+#' will return all paths instead of the first one found in a hierarchy of priorities
+#'
+#' @export
+get_conda_paths <- function(){
+  conda_paths <- c()
+  # allow specification of conda executable
+  conda <- getOption("reticulate.conda_binary")
+  if (!is.null(conda)) conda_paths <- c(conda_paths, conda)
+
+  conda <- Sys.getenv("RETICULATE_CONDA", unset = NA)
+  if (!is.na(conda)) conda_paths <- c(conda_paths, conda)
+
+  # if miniconda is installed, use it
+  conda <- r_conda_path()
+  if (file.exists(conda)){
+    conda_paths <- c(conda_paths, conda)
+  }
+
+  # if there is a conda executable on the PATH, use it
+  conda <- Sys.which("conda")
+  if (nzchar(conda)) conda_paths <- c(conda_paths, unname(conda))
+
+  # otherwise, search common locations for conda
+  prefixes <- c("~/opt/", "~/", "/opt/", "/")
+  names <- c("anaconda", "miniconda", "miniforge")
+  versions <- c("", "2", "3", "4")
+  combos <- expand.grid(versions, names, prefixes, KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)
+  combos <- combos[rev(seq_along(combos))]
+  conda_locations <- unlist(.mapply(paste0, combos, NULL))
+
+  # find the potential conda binary path in each case
+  conda_locations <- if (xfun::is_windows()) {
+    paste0(conda_locations, "/condabin/conda.bat")
+  } else {
+    paste0(conda_locations, "/bin/conda")
+  }
+
+  # look for caskroom version
+  caskroom_conda <- "/opt/homebrew/Caskroom/miniforge/base/bin/conda"
+  if (file.exists(caskroom_conda))
+    conda_locations <- c(conda_locations, caskroom_conda)
+
+  # ensure we expand tilde prefixes
+  conda_locations <- path.expand(conda_locations)
+
+  # append paths
+  conda_paths <- unique(c(conda_paths, conda_locations))
+
+  # keep only conda locations that exist
+  conda_paths <- conda_paths[file.exists(conda_paths)]
+
+  # explicitly return NULL when no conda found
+  if (!length(conda_paths)) return(NULL)
+
+  return(conda_paths)
+}
+
+r_conda_path <- function(path = reticulate::miniconda_path()){
+  exe <- if (xfun::is_windows()){
+    "condabin/conda.bat"
+  }else{
+    "bin/conda"
+  }
+  file.path(path, exe)
 }

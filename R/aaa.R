@@ -28,12 +28,6 @@ python_is_installed <- function(use_environment = NULL){
 #' @note the assumed extension changes depending on operating system.
 #'
 #' @keywords internal
-miniconda_is_installed <- function(path = reticulate::miniconda_path()){
-  exe <- if (xfun::is_windows()){
-    "condabin/conda.bat"
-  }else{
-    "bin/conda"
-  }
-  conda_path <- file.path(path, exe)
-  file.exists(conda_path)
+miniconda_is_installed <- function(){
+  !is.null(get_conda_paths())
 }
