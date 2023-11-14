@@ -9,7 +9,7 @@ setup_py_env(
   python_version = NULL,
   py_env = c("conda", "virtual"),
   env_name = PYTHON_R_ENV,
-  conda_name = c("base", "r-reticulate", PYTHON_R_ENV),
+  conda_path = get_conda_envs(),
   update = FALSE,
   required = FALSE
 )
@@ -24,10 +24,10 @@ to install with a Python virtual environment.}
 
 \item{env_name}{an environment name to use for \strong{new} virtual or conda environments.}
 
-\item{conda_name}{name of the conda environment to use if \code{py_env = "conda"}.
+\item{conda_path}{path of the conda environment to use if \code{py_env = "conda"}.
 Run \code{reticulate::conda_list()} to see a list of available conda environments.
-The \code{conda_name} should match the \code{name} element of that list if you are loading
-\emph{an existing} conda environment. If \code{conda_name} is not found in this list, a new
+The \code{conda_path} should match the \code{python} element of that list if you are loading
+\emph{an existing} conda environment. If \code{conda_path} is not found in this list, a new
 one will be created matching the name of \code{env_name}.}
 
 \item{update}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, update packages that are
@@ -76,7 +76,7 @@ py_env
 # note: you must restart your R session if you've already generated an environment
 py_env <- setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
-  conda_name = PYTHON_R_ENV,
+  conda_path = "/data/.conda/envs/base/bin/python",
   update = TRUE
 )
 

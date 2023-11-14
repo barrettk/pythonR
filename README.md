@@ -22,7 +22,7 @@ py_env
 # note: you must restart your R session if you've already generated an environment
 py_env <- setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
-  conda_name = PYTHON_R_ENV,
+  conda_path = "/data/home/barrettk/.conda/envs/gpt3/bin/python",
   update = TRUE
 )
 
