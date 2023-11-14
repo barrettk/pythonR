@@ -18,12 +18,14 @@ required imports you will need:
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
 py_env
 
-# Specify a specific conda environment
+# Specify a specific conda environment and conda installation
 conda_envs <- reticulate::conda_list()
+conda_paths <- pythonR::get_conda_paths()
 
 py_env <- setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
-  conda_path = conda_envs$python[1],
+  conda_path = conda_paths[1],
+  conda_env = conda_envs$python[1],
   update = TRUE
 )
 
