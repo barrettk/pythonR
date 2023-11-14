@@ -100,15 +100,15 @@ setup_py_env <- function(
 
   if(py_env == "conda"){
     conda_envir_lst <- reticulate::conda_list()
-    conda_envirs <- conda_envir_lst %>% dplyr::pull(.data$name)
+    conda_envirs <- conda_envir_lst %>% dplyr::pull(.data$python)
 
     # pull previous conda environment if it exists, otherwise create new one
     if(!is.null(conda_path) && conda_path %in% conda_envirs){
       # loads a local conda library
       conda_env <- conda_envir_lst %>% dplyr::filter(.data$python == conda_path)
-      env_path <- env_path %>% dplyr::pull(.data$python)
+      env_path <- conda_env %>% dplyr::pull(.data$python)
       # overwrite env_name with conda_name
-      env_name <- env_path %>% dplyr::pull(.data$name)
+      env_name <- conda_env %>% dplyr::pull(.data$name)
     }else{
       # Creates a local conda library
       env_path <- tryCatch(reticulate::conda_create(env_name), error = identity)
