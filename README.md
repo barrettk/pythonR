@@ -14,19 +14,21 @@ required imports you will need:
 
 ``` r
 ## With a conda environment (the default) ##
-# much faster loading time after you've installed the packages once
+# Much faster loading time after you've installed the packages once, but larger package size
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
 py_env
 
-# Put the conda environment under a specific name if you want to store multiple
-# note: you must restart your R session if you've already generated an environment
+# Specify a specific conda environment
+conda_envs <- reticulate::conda_list()
+
 py_env <- setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
-  conda_path = "/data/home/barrettk/.conda/envs/gpt3/bin/python",
+  conda_path = conda_envs$python[1],
   update = TRUE
 )
 
 ## Using a virtual environment ##
+# Smaller package size, but packages must be re-installed for each R session
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), py_env = "virtual")
 py_env
 
@@ -47,6 +49,9 @@ Additional helper functions are provided for ensuring required python
 packages are installed or importing them at various stages within an R
 function/script. A simple example is provided below, but see
 `?pythonR_examples` for fully fleshed out examples and more details.
+Note that some python modules may not be able to be installed/imported
+this way. `tiktoken`, `openai`, and other modules may require specific
+installation procedures and/or the presence of API keys.
 
 ``` r
 my_py_function <- function(){
