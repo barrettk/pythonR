@@ -96,15 +96,17 @@ You must restart your R session if you want to alternate between both environmen
 \dontrun{
 
 ## With a conda environment (the default) ##
-# much faster loading time after you've installed the packages once
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
 py_env
 
-# put the conda environment under a specific name
-# note: you must restart your R session if you've already generated an environment
+# Specify a specific conda environment and conda installation
+conda_envs <- reticulate::conda_list()
+conda_paths <- pythonR::get_conda_paths()
+
 py_env <- setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
-  conda_env = "/data/.conda/envs/base/bin/python",
+  conda_path = conda_paths[1],
+  conda_env = conda_envs$python[1],
   update = TRUE
 )
 

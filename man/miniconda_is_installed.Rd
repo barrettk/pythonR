@@ -4,7 +4,7 @@
 \alias{miniconda_is_installed}
 \title{Check that minicoonda is installed at specified location}
 \usage{
-miniconda_is_installed(path = reticulate::miniconda_path())
+miniconda_is_installed()
 }
 \arguments{
 \item{path}{path to miniconda installation}

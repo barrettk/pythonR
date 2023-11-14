@@ -55,17 +55,25 @@ utils::globalVariables("builtins")
 #' \dontrun{
 #'
 #' ## With a conda environment (the default) ##
-#' # much faster loading time after you've installed the packages once
 #' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
 #' py_env
 #'
-#' # put the conda environment under a specific name
-#' # note: you must restart your R session if you've already generated an environment
+#' # Specify a specific conda environment and conda installation
+#' conda_envs <- reticulate::conda_list()
+#' conda_paths <- pythonR::get_conda_paths()
+#'
 #' py_env <- setup_py_env(
 #'   py_pkgs = c("pandas", "numpy", "scipy"),
-#'   conda_env = "/data/.conda/envs/base/bin/python",
+#'   conda_path = conda_paths[1],
+#'   conda_env = conda_envs$python[1],
 #'   update = TRUE
 #' )
+#'
+#'
+#' # Installing a package after setup (works with both environment types)
+#' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
+#' install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
+#'
 #'
 #' ## With a virtual environment ##
 #' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), py_env = "virtual")
@@ -73,10 +81,6 @@ utils::globalVariables("builtins")
 #'
 #' # shutdown virtual environment
 #' shutdown_virtual_env(py_env$env_name)
-#'
-#' # Installing a package after setup (works with both environment types)
-#' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
-#' install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
 #'
 #' }
 #'
@@ -356,7 +360,7 @@ import_main_py <- function(envir = NULL){
 shutdown_virtual_env <- function(env_name = PYTHON_R_ENV, force = TRUE){
   if(reticulate::virtualenv_exists(env_name)){
     reticulate::virtualenv_remove(env_name, confirm = !force)
-    # Sys.setenv("RETICULATE_PYTHON_ENV" = "")
+    # Sys.unsetenv("RETICULATE_PYTHON_ENV")
   }else{
     warning(glue::glue("Virtual environment {env_name} does not exist."))
   }
