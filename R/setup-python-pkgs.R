@@ -255,18 +255,6 @@ install_py_pkgs <- function(
       pip = ifelse(isTRUE(virtual_env), FALSE, pip),
       ignore_installed = isTRUE(update) && isFALSE(virtual_env)
     )
-    # purrr::walk(to_install, function(pkg){
-    #   args <- list(
-    #     pkg,
-    #     envname = env_name,
-    #     method = ifelse(isTRUE(virtual_env), "virtualenv", "conda"),
-    #     conda = ifelse(isTRUE(virtual_env), "auto", conda_path),
-    #     python_version = python_version,
-    #     pip = pip,
-    #     ignore_installed = isTRUE(update) && isFALSE(virtual_env)
-    #   )
-    #   do.call(reticulate::py_install, args)
-    # })
   }
 
   # Get new selection of installed packages
