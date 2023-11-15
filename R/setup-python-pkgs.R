@@ -35,20 +35,14 @@ utils::globalVariables("builtins")
 #' @details
 #'
 #'
-#' We will want to *install* all packages we need for the app once at the beginning,
-#' and then *import* packages one at a time within each function that needs them
-#'
-#' If we use a virtual/conda environment, we are only using that for packages that dont
-#' come with base python. i.e. the user still needs to have python installed.
-#'
 #' An environment will be required for each new R session.
 #'
 #' For a virtual environment, the user would be installing these packages *every time*
-#' they want to run the app on a clean R session.
+#' they want to run python on a clean R session. It is a smaller package size that
+#' a conda environment.
 #'
-#' For a conda environment, users would only need to install the required
-#' packages once. I think this could be preferable, and would offer significant
-#' speed improvements once the packages have been installed once.
+#' For a conda environment, users only need to install the required packages once. This
+#' may be less ideal if many python modules are required, or you are developing an R package.
 #'
 #' @note
 #' You must restart your R session if you want to alternate between both environment types
@@ -66,16 +60,21 @@ utils::globalVariables("builtins")
 #' conda_paths <- pythonR::get_conda_paths()
 #'
 #' py_env <- setup_py_env(
-#'   py_pkgs = c("pandas", "numpy", "scipy"),
+#'   py_pkgs = c("pandas", "numpy", "scipy", "tiktoken"),
 #'   conda_path = conda_paths[1],
 #'   conda_env = conda_envs$python[1],
-#'   update = TRUE
+#'   required = TRUE,
+#'   update = TRUE,
+#'   pip = TRUE
 #' )
 #'
 #'
 #' # Installing a package after setup (works with both environment types)
 #' py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
 #' install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
+#'
+#' # Check that installed modules can be imported
+#' check_py_pkgs_installed(c("pandas", "numpy", "scipy"))
 #'
 #'
 #' ## With a virtual environment ##
@@ -100,7 +99,7 @@ setup_py_env <- function(
     conda_path = NULL,
     update = FALSE,
     pip = FALSE,
-    required = FALSE
+    required = TRUE
 ){
 
   # Make sure python is installed
