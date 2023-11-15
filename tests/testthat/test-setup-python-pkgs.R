@@ -9,6 +9,6 @@ testthat::test_that("python setup - conda", {
   testthat::expect_true(is.list(py_env))
   expect_equal(
     names(py_env),
-    c("env_name", "env_path", "config", "installed_pkgs", "avail_conda_envirs")
+    c("env_name", "env_path", "conda_path", "config", "installed_pkgs", "avail_conda_envirs")
   )
 })

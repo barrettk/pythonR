@@ -177,6 +177,7 @@ setup_py_env <- function(
   env_list <- list(
     env_name = env_name,
     env_path = env_path,
+    conda_path = conda_path,
     config = config,
     installed_pkgs = installed_pkgs
   )
@@ -186,7 +187,7 @@ setup_py_env <- function(
     env_list <- c(
       env_list,
       list(
-        avail_conda_envirs = reticulate::conda_list()
+        avail_conda_envirs = reticulate::conda_list(conda = conda_path)
       )
     )
   }
