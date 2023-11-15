@@ -313,9 +313,14 @@ import_py_pkgs <- function(
     envir <- parent.frame()
   }
 
+  pkgs_installed <- purrr::map_dfr(py_pkgs, function(pkg){
+    py_module_available(pkg, path)
+  })
+  pkgs_avail <- pkgs_installed$availabile
+
   # import each package
-  purrr::walk(py_pkgs, function(pkg_name){
-    if(py_module_available(pkg_name, path)){
+  purrr::walk2(py_pkgs, pkgs_avail, function(pkg_name, pkg_avail){
+    if(isTRUE(pkg_avail)){
       pkg <- if(is.na(path)){
         reticulate::import(pkg_name, delay_load = delay_load)
       }else{
@@ -323,10 +328,16 @@ import_py_pkgs <- function(
       }
       assign(pkg_name, pkg, envir = envir)
     }else{
+      error = pkgs_installed$error[pkgs_installed$module == pkg_name]
+
+      cli::cli_div(theme = list(span.emph = list(color = "green"), span.code = list(color = "red")))
       cli::cli_warn(
-        glue::glue("Could not import {.code {{pkg_name}}}.
-                    Please check that it is installed.",
-                   .open = "{{", .close = "}}")
+        c(
+          "x" = glue::glue(
+            "Could not import {.emph {{pkg_name}}}",
+            .open = "{{", .close = "}}"),
+          "i" = glue::glue("Reason(s): {error}")
+        )
       )
     }
   })
@@ -449,6 +460,8 @@ py_module_available <- function(module, path){
       module = module, availabile = FALSE, path = path, error = err$msg
     )
   })
+
+  return(mod_avail)
 }
 
 get_py_path <- function(){

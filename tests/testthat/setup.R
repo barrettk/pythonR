@@ -1,4 +1,4 @@
-# Sys.unsetenv("RETICULATE_PYTHON")
+Sys.unsetenv("RETICULATE_PYTHON")
 
 # Set environment for all tests
 # py_env <- withr::with_envvar(new = c("RETICULATE_PYTHON" = NA), {
