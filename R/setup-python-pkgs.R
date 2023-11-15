@@ -24,6 +24,9 @@ utils::globalVariables("builtins")
 #'        See `get_conda_paths()` for details.
 #' @param update Logical (`TRUE`/`FALSE`). If `TRUE`, update packages that are
 #'        already installed. Otherwise skip their installation.
+#' @param pip Logical (`TRUE`/`FALSE`). Use pip for package installation? This
+#'        is only relevant when Conda environments are used, as otherwise packages
+#'        will be installed from the Conda repositories.
 #' @param required Logical (`TRUE`/`FALSE`). Is the requested copy of Python required?
 #'        If TRUE, an error will be emitted if the requested copy of Python does not exist.
 #'        If FALSE, the request is taken as a hint only, and scanning for other versions
@@ -96,6 +99,7 @@ setup_py_env <- function(
     conda_env = get_conda_envs(),
     conda_path = NULL,
     update = FALSE,
+    pip = FALSE,
     required = FALSE
 ){
 
@@ -110,7 +114,7 @@ setup_py_env <- function(
   py_env <- match.arg(py_env)
 
   if(py_env == "conda"){
-    conda_envir_lst <- reticulate::conda_list()
+    conda_envir_lst <- reticulate::conda_list(conda = conda_path)
     conda_envirs <- conda_envir_lst %>% dplyr::pull(.data$python)
 
     # choose first environment if multiple are provided via `get_conda_envs`
@@ -165,7 +169,9 @@ setup_py_env <- function(
     py_pkgs,
     env_name = env_name,
     py_env = py_env,
+    conda_path = conda_path,
     update = update,
+    pip = pip,
     python_version = python_version
   )
 
@@ -192,6 +198,7 @@ setup_py_env <- function(
 
 #' @describeIn setup_py_env Install python packages to an environment
 #'
+#'
 #' @details
 #' see `?reticulate::py_install` for more details
 #'
@@ -201,18 +208,19 @@ setup_py_env <- function(
 install_py_pkgs <- function(
     py_pkgs = c("scipy", "pandas"),
     py_env = c("conda", "virtual"),
+    conda_path = NULL,
     env_name = PYTHON_R_ENV,
+    pip = FALSE,
     update = FALSE,
     python_version = NULL
 ){
 
-  py_env <- match.arg(py_env)
+  if(is.null(conda_path)){
+    conda_path <- get_conda_paths()[1]
+  }
 
+  py_env <- match.arg(py_env)
   virtual_env <- (py_env == "virtual")
-  py_install_fn <- ifelse(isTRUE(virtual_env),
-                          reticulate::virtualenv_install,
-                          reticulate::conda_install
-  )
 
   # Check if already installed
   if(isFALSE(update)){
@@ -221,7 +229,7 @@ install_py_pkgs <- function(
 
     py_pkgs_installed <- py_pkgs[py_pkgs %in% installed_pkgs$package] %>%
       paste(collapse = ", ")
-    if(!rlang::is_empty(py_pkgs_installed)){
+    if(!rlang::is_empty(py_pkgs_installed) && nzchar(py_pkgs_installed)){
       msg <- paste0(
         "The following packages have already been installed",
         " (set `update = TRUE` to override). Skipping...",
@@ -238,11 +246,27 @@ install_py_pkgs <- function(
 
 
   if(!is.null(to_install) && !rlang::is_empty(to_install)){
-    purrr::walk(to_install, function(pkg){
-      args <- list(pkg, python_version = python_version,
-                   envname = env_name)
-      do.call(py_install_fn, args)
-    })
+    reticulate::py_install(
+      to_install,
+      envname = env_name,
+      method = ifelse(isTRUE(virtual_env), "virtualenv", "conda"),
+      conda = ifelse(isTRUE(virtual_env), "auto", conda_path),
+      python_version = python_version,
+      pip = ifelse(isTRUE(virtual_env), FALSE, pip),
+      ignore_installed = isTRUE(update) && isFALSE(virtual_env)
+    )
+    # purrr::walk(to_install, function(pkg){
+    #   args <- list(
+    #     pkg,
+    #     envname = env_name,
+    #     method = ifelse(isTRUE(virtual_env), "virtualenv", "conda"),
+    #     conda = ifelse(isTRUE(virtual_env), "auto", conda_path),
+    #     python_version = python_version,
+    #     pip = pip,
+    #     ignore_installed = isTRUE(update) && isFALSE(virtual_env)
+    #   )
+    #   do.call(reticulate::py_install, args)
+    # })
   }
 
   # Get new selection of installed packages
@@ -291,7 +315,7 @@ import_py_pkgs <- function(
 
   # import each package
   purrr::walk(py_pkgs, function(pkg_name){
-    if(reticulate::py_module_available(pkg_name)){
+    if(py_module_available(pkg_name, path)){
       pkg <- if(is.na(path)){
         reticulate::import(pkg_name, delay_load = delay_load)
       }else{
@@ -383,7 +407,7 @@ check_py_pkgs_installed <- function(py_pkgs, path = get_py_path(), warn = FALSE)
 
   if(!is.null(pkgs_avail) && any(!pkgs_avail)){
     pkgs_not_installed <- py_pkgs[!pkgs_avail] %>% paste(collapse = ", ")
-    errors <- paste("{.code", pkgs_installed$error[!pkgs_avail], "}")
+    errors <- paste0("{.code ", pkgs_installed$error[!pkgs_avail], "}")
     alert_fn <- ifelse(isTRUE(warn), cli::cli_warn, cli::cli_abort)
 
     cli::cli_div(theme = list(span.emph = list(color = "green"), span.code = list(color = "red")))
@@ -413,7 +437,7 @@ py_module_available <- function(module, path){
   mod_avail <- tryCatch({
     if(is.na(path)){
       reticulate::import(module)
-      path <- Sys.getenv("RETICULATE_PYTHON")
+      path <- Sys.getenv("RETICULATE_PYTHON_ENV")
     }else{
       reticulate::import_from_path(module, path = path)
     }

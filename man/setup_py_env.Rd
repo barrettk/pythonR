@@ -14,13 +14,16 @@ setup_py_env(
   conda_env = get_conda_envs(),
   conda_path = NULL,
   update = FALSE,
+  pip = FALSE,
   required = FALSE
 )
 
 install_py_pkgs(
   py_pkgs = c("scipy", "pandas"),
   py_env = c("conda", "virtual"),
+  conda_path = NULL,
   env_name = PYTHON_R_ENV,
+  pip = FALSE,
   update = FALSE,
   python_version = NULL
 )
@@ -48,6 +51,10 @@ See \code{get_conda_paths()} for details.}
 
 \item{update}{Logical (\code{TRUE}/\code{FALSE}). If \code{TRUE}, update packages that are
 already installed. Otherwise skip their installation.}
+
+\item{pip}{Logical (\code{TRUE}/\code{FALSE}). Use pip for package installation? This
+is only relevant when Conda environments are used, as otherwise packages
+will be installed from the Conda repositories.}
 
 \item{required}{Logical (\code{TRUE}/\code{FALSE}). Is the requested copy of Python required?
 If TRUE, an error will be emitted if the requested copy of Python does not exist.
@@ -110,16 +117,18 @@ py_env <- setup_py_env(
   update = TRUE
 )
 
+
+# Installing a package after setup (works with both environment types)
+py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
+install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
+
+
 ## With a virtual environment ##
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"), py_env = "virtual")
 py_env
 
 # shutdown virtual environment
 shutdown_virtual_env(py_env$env_name)
-
-# Installing a package after setup (works with both environment types)
-py_env <- setup_py_env(py_pkgs = c("pandas", "numpy"), py_env = "conda")
-install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
 
 }
 
