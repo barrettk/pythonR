@@ -246,6 +246,8 @@ install_py_pkgs <- function(
 
 
   if(!is.null(to_install) && !rlang::is_empty(to_install)){
+    to_install_txt <- paste(to_install, collapse = ", ")
+    message(glue::glue("\n\nInstalling packages: {to_install_txt}\n\n"))
     reticulate::py_install(
       to_install,
       envname = env_name,
