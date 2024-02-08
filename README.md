@@ -3,13 +3,27 @@
 
 # pythonR <a href='https://github.com/barrettk/pythonR'><img src='man/figures/logo.png' align="right" height="180" style="float:right; height:180px;"/></a>
 
-`pythonR` includes helper functions for using Python in R. It is
-essentially a wrapper of the `reticulate` R package, and can helpful in
-an R package development or project environment where you want more
-readable code for setting up a python environment and installing any
-necessary python dependencies.
+`pythonR` is an R package that facilitates the seamless integration of
+Python code and functionality within R environments. Leveraging the
+`reticulate` package, `pythonR` aims to simplify the process of
+developing Python-based functions in R, making it easier to set up,
+test, and validate Python code directly within the R environment.
 
-Install the latest development version:
+## Features
+
+-   Provides a convenient wrapper for using Python in R, reducing the
+    overhead of managing Python environments.
+-   Simplifies the installation and management of required Python
+    packages from within R.
+-   Offers functions for importing Python modules and executing Python
+    code directly from R scripts or functions.
+-   Exports
+    [example](https://barrettk.github.io/pythonR/reference/pythonR_examples.html)
+    python-based functions
+
+## Getting Started
+
+Install the latest development version from GitHub:
 
 ``` r
 devtools::install_github("barrettk/pythonR")
@@ -18,3 +32,9 @@ devtools::install_github("barrettk/pythonR")
 See the [Getting
 Started](https://barrettk.github.io/pythonR/articles/getting-started.html)
 vignette for more details.
+
+### Contribution
+
+Contributions to `pythonR` are welcome! If you encounter any issues or
+have suggestions for improvement, please feel free to open an issue or
+submit a pull request on the GitHub repository.
