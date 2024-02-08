@@ -5,6 +5,8 @@ score_package <- function(
     overwrite = TRUE
 ){
 
+  library(mpn.scorecard)
+
   # Setup Directories
   score_dir <- tempfile(pattern = "score_dir")
   fs::dir_create(score_dir)

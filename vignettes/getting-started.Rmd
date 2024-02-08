@@ -46,6 +46,7 @@ py_env
 shutdown_virtual_env(py_env$env_name)
 ```
 
+
 Note that you can always install packages to the environment you created at a later time:
 ```{r}
 # Installing a package after setup (works with both environment types)
