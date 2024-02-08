@@ -196,7 +196,7 @@ setup_py_env <- function(
 }
 
 
-#' @describeIn setup_py_env Install python packages to an environment
+#' @describeIn setup_py_env Install python packages to a python environment
 #'
 #'
 #' @details
@@ -271,7 +271,9 @@ install_py_pkgs <- function(
 
 
 
-#' Import python packages into the environment
+#' Import python packages
+#'
+#' Import installed python packages into the environment
 #'
 #' @inheritParams install_py_pkgs
 #' @inheritParams import_main_py
@@ -290,6 +292,8 @@ install_py_pkgs <- function(
 #'
 #' `scipy <- reticulate::import_from_path("scipy", path = "path/to/module")`
 #'
+#' @seealso [install_py_pkgs]
+#' @seealso [import_main_py]
 #'
 #' @export
 import_py_pkgs <- function(
@@ -338,7 +342,7 @@ import_py_pkgs <- function(
 }
 
 
-#' Import main module and default functions
+#' Import `main` module and default functions
 #'
 #' @details
 #'
@@ -349,6 +353,9 @@ import_py_pkgs <- function(
 #'
 #'
 #' @param envir environment to load the main modules into
+#'
+#' @seealso [install_py_pkgs]
+#' @seealso [import_py_pkgs]
 #'
 #' @export
 import_main_py <- function(envir = NULL){

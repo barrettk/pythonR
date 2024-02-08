@@ -8,9 +8,11 @@ Packages:
   - pkgdown
   - rmarkdown
   - markdown
+  - mpn.scorecard
 
 Repos:
   - CRAN: https://cran.rstudio.com
+  - MPN: https://mpn.metworx.com/snapshots/stable/2023-12-05
 
 Lockfile:
     Type: renv

@@ -1,12 +1,14 @@
 Package: pythonR
 Title: Helper functions for using Python in R
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
     c(
       person(given = "Kyle", family = "Barrett", email = "barrettk@metrumrg.com", role = c("aut", "cre"))
     )
 Description: R package for creating python environments and importing various packages via reticulate.
 License: MIT + file LICENSE
+URL: barrettk.github.io/pythonR/, https://github.com/barrettk/pythonR
+BugReports: https://github.com/barrettk/pythonR/issues
 Depends:
     R (>= 3.5),
 Imports: 
@@ -21,15 +23,14 @@ Imports:
     rlang,
     testthat (>= 3.0.0),
     tibble,
-    withr,
     xfun
 Suggests:
+    withr,
     knitr
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 StagedInstall: no
-

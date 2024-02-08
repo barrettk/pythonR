@@ -2,7 +2,7 @@
 % Please edit documentation in R/setup-python-pkgs.R
 \name{import_py_pkgs}
 \alias{import_py_pkgs}
-\title{Import python packages into the environment}
+\title{Import python packages}
 \usage{
 import_py_pkgs(
   py_pkgs = c("scipy", "pandas"),
@@ -23,7 +23,7 @@ is first used? If FALSE, the module will be loaded immediately.
 See \code{\link[reticulate:import]{reticulate::import()}} for more information.}
 }
 \description{
-Import python packages into the environment
+Import installed python packages into the environment
 }
 \details{
 This function loops through \code{py_pkgs}, and does the equivalent of the following,
@@ -34,4 +34,9 @@ and assigns it to the parent environment:
 or
 
 \code{scipy <- reticulate::import_from_path("scipy", path = "path/to/module")}
+}
+\seealso{
+\link{install_py_pkgs}
+
+\link{import_main_py}
 }
