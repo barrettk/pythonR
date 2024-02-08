@@ -6,3 +6,4 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^pkgr\.yml$
+^score-package\.R$
