@@ -1,0 +1,30 @@
+url: https://barrettk.github.io/pythonR
+
+title: pythonR
+template:
+  params:
+    bootswatch: flatly
+navbar:
+  type: inverse
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/barrettk/pythonR
+
+Package:
+- title: Package Setup
+  contents:
+  - setup_py_env
+  - get_conda_paths
+  - install_py_pkgs
+  - check_py_pkgs_installed
+  - import_py_pkgs
+  - import_main_py
+  - python_is_installed
+  - shutdown_virtual_env
+
+- title: Examples
+  contents:
+  - pythonR_examples
+  - get_py_example
+
+
