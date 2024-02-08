@@ -85,7 +85,7 @@ will return all paths instead of the first one found in a hierarchy of prioritie
 }
 \section{Functions}{
 \itemize{
-\item \code{install_py_pkgs()}: Install python packages to an environment
+\item \code{install_py_pkgs()}: Install python packages to a python environment
 
 \item \code{get_conda_paths()}: Search for conda installations
 

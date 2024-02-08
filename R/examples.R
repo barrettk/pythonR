@@ -4,29 +4,10 @@ EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE
 
 # Example functions -------------------------------------------------------
 
-#' Environment example python functions
-#'
-#'
-#' @examples
-#' \dontrun{
-#' # Get list of available examples.
-#' ls(pythonR_examples)
-#'
-#'
-#' # View the functions
-#' get("py_add", envir = pythonR_examples)
-#' get("py_check_path", envir = pythonR_examples)
-#' get("py_array", envir = pythonR_examples)
-#'
-#' # Assign the function to use it
-#' py_add <- get_py_example("py_add")
-#' py_add(3, 4)
-#'}
-#' @name pythonR_examples
-NULL
 
 
-#' Get python example
+
+#' Retrieve example function from `pythonR_examples`
 #'
 #' @rdname pythonR_examples
 #'
@@ -158,7 +139,25 @@ py_array <- function(){
 
 
 
-#' pythonR example functions
+#' Environment containing `pythonR` example functions
+#'
+#'
+#' @examples
+#' \dontrun{
+#' # Get list of available examples.
+#' ls(pythonR_examples)
+#'
+#'
+#' # View the functions
+#' get("py_add", envir = pythonR_examples)
+#' get("py_check_path", envir = pythonR_examples)
+#' get("py_array", envir = pythonR_examples)
+#'
+#' # Assign the function to use it
+#' py_add <- get_py_example("py_add")
+#' py_add(3, 4)
+#'}
+#'
 #' @rdname pythonR_examples
 #' @export
 pythonR_examples <- list2env(
