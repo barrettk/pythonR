@@ -7,6 +7,7 @@ Authors@R:
     )
 Description: R package for creating python environments and importing various packages via reticulate.
 License: MIT + file LICENSE
+URL: barrettk.github.io/pythonR/, https://github.com/barrettk/pythonR
 Depends:
     R (>= 3.5),
 Imports: 
