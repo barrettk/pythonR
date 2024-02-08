@@ -10,7 +10,7 @@ navbar:
   - icon: fa-github fa-lg
     href: https://github.com/barrettk/pythonR
 
-Package:
+reference:
 - title: Package Setup
   contents:
   - setup_py_env
