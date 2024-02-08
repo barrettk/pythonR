@@ -97,14 +97,15 @@ Barrett</h4>
 
     
     
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/barrettk/pythonR" class="external-link">pythonR</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="setting-up-your-environment">Setting up your environment<a class="anchor" aria-label="anchor" href="#setting-up-your-environment"></a>
 </h2>
 <p>You begin by setting up a python environment (conda or virtual) with
 the required imports you will need:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/barrettk/pythonR" class="external-link">pythonR</a></span><span class="op">)</span></span>
-<span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co">## With a conda environment (the default) ##</span></span>
 <span><span class="va">py_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup_py_env.html">setup_py_env</a></span><span class="op">(</span>py_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pandas"</span>, <span class="st">"numpy"</span>, <span class="st">"scipy"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">py_env</span></span>
@@ -129,7 +130,7 @@ the required imports you will need:</p>
 <span><span class="fu"><a href="../reference/shutdown_virtual_env.html">shutdown_virtual_env</a></span><span class="op">(</span><span class="va">py_env</span><span class="op">$</span><span class="va">env_name</span><span class="op">)</span></span></code></pre></div>
 <p>Note that you can always install packages to the environment you
 created at a later time:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Installing a package after setup (works with both environment types)</span></span>
 <span><span class="va">py_env</span> <span class="op">&lt;-</span> <span class="fu">pythonR</span><span class="fu">::</span><span class="fu"><a href="../reference/setup_py_env.html">setup_py_env</a></span><span class="op">(</span>py_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pandas"</span>, <span class="st">"numpy"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu">pythonR</span><span class="fu">::</span><span class="fu"><a href="../reference/setup_py_env.html">install_py_pkgs</a></span><span class="op">(</span>py_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'scipy'</span><span class="op">)</span>, env_name <span class="op">=</span> <span class="va">py_env</span><span class="op">$</span><span class="va">env_name</span><span class="op">)</span></span>
@@ -142,7 +143,7 @@ created at a later time:</p>
 <span><span class="fu">pythonR</span><span class="fu">::</span><span class="fu"><a href="../reference/check_py_pkgs_installed.html">check_py_pkgs_installed</a></span><span class="op">(</span><span class="va">required_py_pkgs</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="create-a-python-function">Create a python function<a class="anchor" aria-label="anchor" href="#create-a-python-function"></a>
+<h2 id="create-a-python-based-function">Create a python-based function<a class="anchor" aria-label="anchor" href="#create-a-python-based-function"></a>
 </h2>
 <p>Additional helper functions are provided for ensuring required python
 packages are installed or importing them at various stages within an R
@@ -151,7 +152,7 @@ function/script. A simple example is provided below, but see
 details. Note that some python modules may not be able to be
 installed/imported this way, and may require a more custom
 installation.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_py_function</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co"># Check that python packages are installed</span></span>
 <span>  <span class="va">required_py_pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pandas'</span>, <span class="st">'scipy'</span>, <span class="st">'numpy'</span><span class="op">)</span></span>
@@ -167,7 +168,7 @@ installation.</p>
 <span>  </span>
 <span>  <span class="co"># do something...</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set up a python environment once per R session</span></span>
 <span><span class="va">py_env</span> <span class="op">&lt;-</span> <span class="fu">pythonR</span><span class="fu">::</span><span class="fu"><a href="../reference/setup_py_env.html">setup_py_env</a></span><span class="op">(</span></span>
 <span>  py_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pandas"</span>, <span class="st">"numpy"</span>, <span class="st">"scipy"</span><span class="op">)</span>,</span>
@@ -176,6 +177,36 @@ installation.</p>
 <span></span>
 <span><span class="co"># Use any python functions coded in R</span></span>
 <span><span class="fu">my_py_function</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="provided-python-based-functions">Provided python-based functions<a class="anchor" aria-label="anchor" href="#provided-python-based-functions"></a>
+</h2>
+<p><code>pythonR</code> comes with some example functions you can
+reference when developing your own:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get list of available examples.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="va">pythonR_examples</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "py_add"        "py_array"      "py_check_path"</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># View the functions</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="st">"py_add"</span>, envir <span class="op">=</span> <span class="va">pythonR_examples</span><span class="op">)</span></span>
+<span><span class="co">#&gt; expression({</span></span>
+<span><span class="co">#&gt;     py_add &lt;- function(x = 5, y = 10) {</span></span>
+<span><span class="co">#&gt;         py_script &lt;- file.path(EXAMPLE_PYTHON_DIR, "script-add.py")</span></span>
+<span><span class="co">#&gt;         if (isTRUE(python_is_installed())) {</span></span>
+<span><span class="co">#&gt;             reticulate::source_python(py_script)</span></span>
+<span><span class="co">#&gt;         }</span></span>
+<span><span class="co">#&gt;         sum &lt;- py_add(x, y)</span></span>
+<span><span class="co">#&gt;         return(sum)</span></span>
+<span><span class="co">#&gt;     }</span></span>
+<span><span class="co">#&gt; })</span></span>
+<span><span class="co"># get("py_check_path", envir = pythonR_examples)</span></span>
+<span><span class="co"># get("py_array", envir = pythonR_examples)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Assign the function to use it</span></span>
+<span><span class="va">py_add</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pythonR_examples.html">get_py_example</a></span><span class="op">(</span><span class="st">"py_add"</span><span class="op">)</span></span>
+<span><span class="fu">py_add</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 7</span></span></code></pre></div>
 </div>
   </div>
 
