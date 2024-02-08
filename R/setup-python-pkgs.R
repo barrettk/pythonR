@@ -303,6 +303,10 @@ import_py_pkgs <- function(
     envir <- parent.frame()
   }
 
+  # Make all passed python modules lowercase
+  # uppercase is accepted for installation, but not importing
+  py_pkgs <- tolower(py_pkgs)
+
   pkgs_installed <- purrr::map_dfr(py_pkgs, function(pkg){
     py_module_available(pkg, path)
   })
@@ -401,6 +405,11 @@ shutdown_virtual_env <- function(env_name = PYTHON_R_ENV, force = TRUE){
 #'
 #' @export
 check_py_pkgs_installed <- function(py_pkgs, path = get_py_path(), warn = FALSE){
+
+  # Make all passed python modules lowercase
+  # uppercase is accepted for installation, but not importing
+  py_pkgs <- tolower(py_pkgs)
+
   pkgs_installed <- purrr::map_dfr(py_pkgs, function(pkg){
     py_module_available(pkg, path)
   })
