@@ -16,11 +16,22 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r setup, include=FALSE, eval=TRUE}
+# NOTE: if running chunks interactively we need to load the package first
+#   because renv isolation prevents us from finding a pythonR installation
+if (interactive()) {
+  devtools::load_all()
+}
+```
+
+```{r load packages, results = 'hide', message=FALSE, warning=FALSE, eval=TRUE}
+library(pythonR)
+```
+
 ## Setting up your environment
 
 You begin by setting up a python environment (conda or virtual) with the required imports you will need:
 ```{r}
-library(pythonR)
 
 ## With a conda environment (the default) ##
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
@@ -62,7 +73,7 @@ pythonR::check_py_pkgs_installed(required_py_pkgs)
 ```
 
 
-## Create a python function
+## Create a python-based function
 
 Additional helper functions are provided for ensuring required python packages are installed or importing them at various stages within an R function/script. A simple example is provided below, but see `?pythonR_examples` for fully fleshed out examples and more details. Note that some python modules may not be able to be installed/imported this way, and may require a more custom installation.
 
@@ -95,5 +106,28 @@ py_env <- pythonR::setup_py_env(
 
 # Use any python functions coded in R
 my_py_function()
+```
+
+## Provided python-based functions
+`pythonR` comes with some example functions you can reference when developing your own:
+
+```{r, eval = TRUE}
+# Get list of available examples.
+ls(pythonR_examples)
+```
+
+
+```{r, eval = TRUE}
+# View the functions
+get("py_add", envir = pythonR_examples)
+# get("py_check_path", envir = pythonR_examples)
+# get("py_array", envir = pythonR_examples)
+```
+
+
+```{r, eval = TRUE}
+# Assign the function to use it
+py_add <- get_py_example("py_add")
+py_add(3, 4)
 ```
 
