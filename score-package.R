@@ -57,12 +57,13 @@ score_package <- function(
 }
 
 overwrite_scorecard <- function(pdf_path){
+  devtools::load_all()
   scorecard_dir <- system.file("scorecard", package = "pythonR", mustWork = TRUE)
   fs::file_copy(pdf_path, scorecard_dir, overwrite = TRUE)
 }
 
 # Create scorecard
-# score_card <- score_package()
+score_card <- score_package()
 # rstudioapi::filesPaneNavigate(score_card$score_dir)
 
 # Overwrite scorecard
