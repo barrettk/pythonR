@@ -13,4 +13,4 @@ EXAMPLE_PYTHON_DIR
 \description{
 Package directory containing example python scripts
 }
-\keyword{datasets}
+\keyword{internal}

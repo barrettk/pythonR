@@ -1,5 +1,6 @@
 
 #' Package directory containing example python scripts
+#' @keywords internal
 EXAMPLE_PYTHON_DIR <- system.file("python", package = "pythonR", mustWork = TRUE)
 
 # Example functions -------------------------------------------------------
