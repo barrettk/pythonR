@@ -2,6 +2,7 @@
 #' Default environment name for python packages
 #'
 #' Can be use for virtual of conda environment
+#' @keywords internal
 PYTHON_R_ENV <- "pythonR-python"
 
 utils::globalVariables("main")
