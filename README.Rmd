@@ -9,12 +9,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   eval = FALSE,
   comment = "#>",
-  fig.path = "man/figures/README-",
+  fig.path = "man/figures",
   out.width = "100%"
 )
 ```
 
-# pythonR <a href='https://github.com/barrettk/pythonR'><img src='man/figures/logo.png' align="right" height="180" style="float:right; height:180px;"/></a>
+# pythonR <a href='https://barrettk.github.io/pythonR/'><img src='man/figures/logo.png' align="right" height="180" style="float:right; height:180px;"/></a>
 
 `pythonR` is an R package that facilitates the seamless integration of Python code and functionality within R environments. Leveraging the `reticulate` package, `pythonR` aims to simplify the process of developing Python-based functions in R, making it easier to set up, test, and validate Python code directly within the R environment.
 

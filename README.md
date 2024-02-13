@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# pythonR <a href='https://github.com/barrettk/pythonR'><img src='man/figures/logo.png' align="right" height="180" style="float:right; height:180px;"/></a>
+# pythonR <a href='https://barrettk.github.io/pythonR/'><img src='man/figures/logo.png' align="right" height="180" style="float:right; height:180px;"/></a>
 
 `pythonR` is an R package that facilitates the seamless integration of
 Python code and functionality within R environments. Leveraging the
