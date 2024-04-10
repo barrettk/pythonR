@@ -1,6 +1,6 @@
 Package: pythonR
 Title: Helper functions for using Python in R
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: 
     c(
       person(given = "Kyle", family = "Barrett", email = "barrettk@metrumrg.com", role = c("aut", "cre"))
@@ -14,7 +14,7 @@ Depends:
 Imports: 
     cli (>= 3.3.0),
     checkmate,
-    dplyr,
+    dplyr (>= 1.0.0),
     fs,
     glue (>= 1.6.2),
     magrittr (>= 2.0.3),
@@ -25,6 +25,7 @@ Imports:
     tibble,
     xfun
 Suggests:
+    devtools,
     withr,
     knitr
 VignetteBuilder: 
