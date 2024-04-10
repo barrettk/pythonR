@@ -1,6 +1,11 @@
 
 testthat::test_that("python example - py_add", {
   skip_if_no_python()
+  expect_equal(ls(pythonR_examples), c("py_add", "py_array", "py_check_path"))
+})
+
+testthat::test_that("python example - py_add", {
+  skip_if_no_python()
 
   py_add <- get_py_example("py_add")
   expect_equal(py_add(3,4), 7)

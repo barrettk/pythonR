@@ -9,22 +9,11 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  eval = FALSE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
-```{r setup, include=FALSE, eval=TRUE}
-# NOTE: if running chunks interactively we need to load the package first
-#   because renv isolation prevents us from finding a pythonR installation
-if (interactive()) {
-  devtools::load_all()
-}
-```
 
-```{r load packages, results = 'hide', message=FALSE, warning=FALSE, eval=TRUE}
+```{r load packages, results = 'hide', message=FALSE, warning=FALSE}
 library(pythonR)
 ```
 
@@ -32,7 +21,6 @@ library(pythonR)
 
 You begin by setting up a python environment (conda or virtual) with the required imports you will need:
 ```{r}
-
 ## With a conda environment (the default) ##
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
 py_env
@@ -57,10 +45,6 @@ py_env
 shutdown_virtual_env(py_env$env_name)
 ```
 
-```{r, eval=TRUE, echo=FALSE}
-Sys.unsetenv("RETICULATE_PYTHON")
-py_env <- setup_py_env() %>% suppressWarnings()
-```
 
 Note that you can always install packages to the environment you created at a later time:
 ```{r}
@@ -115,23 +99,50 @@ my_py_function()
 ## Provided python-based functions
 `pythonR` comes with some example functions you can reference when developing your own:
 
-```{r, eval = TRUE}
+```{r}
 # Get list of available examples.
 ls(pythonR_examples)
+#> [1] "py_add"        "py_array"      "py_check_path"
 ```
 
 
-```{r, eval = TRUE}
+```{r}
 # View the functions
 get("py_add", envir = pythonR_examples)
-# get("py_check_path", envir = pythonR_examples)
-# get("py_array", envir = pythonR_examples)
+#> expression({
+#> # Simple python function
+#> #
+#> # @param x a number
+#> # @param y a number
+#> #
+#> # @details
+#> # This function does not require imports or virtual environment (much faster)
+#> py_add <- function(
+#>     x = 5,
+#>     y = 10
+#> ){
+#> 
+#>   # source specific python script
+#>   py_script <- file.path(EXAMPLE_PYTHON_DIR, 'script-add.py')
+#> 
+#>   # Source python script if python is installed
+#>   if(isTRUE(python_is_installed())){
+#>    reticulate::source_python(py_script)
+#>   }
+#> 
+#>   # `py_add` is a function defined in `py_script`
+#>   sum <- py_add(x, y)
+#> 
+#>   return(sum)
+#> }
+#> })
 ```
 
 
-```{r, eval = TRUE}
+```{r}
 # Assign the function to use it
 py_add <- get_py_example("py_add")
 py_add(3, 4)
+#> [1] 7
 ```
 
