@@ -5,6 +5,7 @@ Authors@R:
     c(
       person(given = "Kyle", family = "Barrett", email = "barrettk@metrumrg.com", role = c("aut", "cre"))
     )
+Maintainer: Kyle Barrett <barrettk@metrumrg.com>
 Description: R package for creating python environments and importing various packages via reticulate.
 License: MIT + file LICENSE
 URL: barrettk.github.io/pythonR/, https://github.com/barrettk/pythonR
