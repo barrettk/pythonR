@@ -14,7 +14,7 @@ Depends:
 Imports: 
     cli (>= 3.3.0),
     checkmate,
-    dplyr,
+    dplyr (>= 1.0.0),
     fs,
     glue (>= 1.6.2),
     magrittr (>= 2.0.3),

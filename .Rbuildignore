@@ -7,3 +7,5 @@
 ^README\.Rmd$
 ^pkgr\.yml$
 ^score-package\.R$
+^pkgdown$
+^_pkgdown\.yml$
