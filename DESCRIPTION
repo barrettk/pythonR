@@ -25,6 +25,7 @@ Imports:
     tibble,
     xfun
 Suggests:
+    devtools,
     withr,
     knitr
 VignetteBuilder: 
