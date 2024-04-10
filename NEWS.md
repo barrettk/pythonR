@@ -13,6 +13,7 @@ Core exported functions:
  - `python_is_installed`: Check that python is installed
  - `shutdown_virtual_env`: Shut down virtual environment
  
- Examples
+ Examples:
+ 
  - `pythonR_examples`: Environment containing pythonR example functions
  - `get_py_example`: Retrieve example function from `pythonR_examples`
