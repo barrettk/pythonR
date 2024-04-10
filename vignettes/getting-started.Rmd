@@ -22,6 +22,7 @@ knitr::opts_chunk$set(
 if (interactive()) {
   devtools::load_all()
 }
+Sys.unsetenv("RETICULATE_PYTHON")
 ```
 
 ```{r load packages, results = 'hide', message=FALSE, warning=FALSE, eval=TRUE}
@@ -57,6 +58,9 @@ py_env
 shutdown_virtual_env(py_env$env_name)
 ```
 
+```{r, eval=TRUE, echo=FALSE}
+py_env <- setup_py_env() %>% suppressWarnings()
+```
 
 Note that you can always install packages to the environment you created at a later time:
 ```{r}

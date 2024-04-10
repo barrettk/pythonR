@@ -5,7 +5,8 @@ Sys.unsetenv("RETICULATE_PYTHON")
 #   setup_py_env(py_pkgs = NULL) %>% suppressMessages()
 # })
 
-py_env <- setup_py_env(py_pkgs = "pandas") %>% suppressMessages() %>%
+py_env <- setup_py_env(py_pkgs = "pandas") %>%
+  suppressMessages() %>%
   suppressWarnings()
 
 ENV_NAME <- py_env$env_name
