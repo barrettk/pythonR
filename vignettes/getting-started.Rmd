@@ -13,14 +13,14 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
-```{r load packages, results = 'hide', message=FALSE, warning=FALSE}
+```{r load package, eval = FALSE}
 library(pythonR)
 ```
 
 ## Setting up your environment
 
 You begin by setting up a python environment (conda or virtual) with the required imports you will need:
-```{r}
+```{r, eval = FALSE}
 ## With a conda environment (the default) ##
 py_env <- setup_py_env(py_pkgs = c("pandas", "numpy", "scipy"))
 py_env
@@ -47,7 +47,7 @@ shutdown_virtual_env(py_env$env_name)
 
 
 Note that you can always install packages to the environment you created at a later time:
-```{r}
+```{r, eval = FALSE}
 # Installing a package after setup (works with both environment types)
 py_env <- pythonR::setup_py_env(py_pkgs = c("pandas", "numpy"))
 pythonR::install_py_pkgs(py_pkgs = c('scipy'), env_name = py_env$env_name)
@@ -85,7 +85,7 @@ my_py_function <- function(){
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 # Set up a python environment once per R session
 py_env <- pythonR::setup_py_env(
   py_pkgs = c("pandas", "numpy", "scipy"),
@@ -99,14 +99,14 @@ my_py_function()
 ## Provided python-based functions
 `pythonR` comes with some example functions you can reference when developing your own:
 
-```{r}
+```{r, eval = FALSE}
 # Get list of available examples.
 ls(pythonR_examples)
 #> [1] "py_add"        "py_array"      "py_check_path"
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 # View the functions
 get("py_add", envir = pythonR_examples)
 #> expression({
@@ -139,7 +139,7 @@ get("py_add", envir = pythonR_examples)
 ```
 
 
-```{r}
+```{r, eval = FALSE}
 # Assign the function to use it
 py_add <- get_py_example("py_add")
 py_add(3, 4)
