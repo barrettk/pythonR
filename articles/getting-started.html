@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pythonR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
       </span>
     </div>
 
@@ -105,8 +105,7 @@ Barrett</h4>
 <p>You begin by setting up a python environment (conda or virtual) with
 the required imports you will need:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co">## With a conda environment (the default) ##</span></span>
+<code class="sourceCode R"><span><span class="co">## With a conda environment (the default) ##</span></span>
 <span><span class="va">py_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup_py_env.html">setup_py_env</a></span><span class="op">(</span>py_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pandas"</span>, <span class="st">"numpy"</span>, <span class="st">"scipy"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">py_env</span></span>
 <span></span>
@@ -191,17 +190,32 @@ reference when developing your own:</p>
 <code class="sourceCode R"><span><span class="co"># View the functions</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="st">"py_add"</span>, envir <span class="op">=</span> <span class="va">pythonR_examples</span><span class="op">)</span></span>
 <span><span class="co">#&gt; expression({</span></span>
-<span><span class="co">#&gt;     py_add &lt;- function(x = 5, y = 10) {</span></span>
-<span><span class="co">#&gt;         py_script &lt;- file.path(EXAMPLE_PYTHON_DIR, "script-add.py")</span></span>
-<span><span class="co">#&gt;         if (isTRUE(python_is_installed())) {</span></span>
-<span><span class="co">#&gt;             reticulate::source_python(py_script)</span></span>
-<span><span class="co">#&gt;         }</span></span>
-<span><span class="co">#&gt;         sum &lt;- py_add(x, y)</span></span>
-<span><span class="co">#&gt;         return(sum)</span></span>
-<span><span class="co">#&gt;     }</span></span>
-<span><span class="co">#&gt; })</span></span>
-<span><span class="co"># get("py_check_path", envir = pythonR_examples)</span></span>
-<span><span class="co"># get("py_array", envir = pythonR_examples)</span></span></code></pre></div>
+<span><span class="co">#&gt; # Simple python function</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # @param x a number</span></span>
+<span><span class="co">#&gt; # @param y a number</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # @details</span></span>
+<span><span class="co">#&gt; # This function does not require imports or virtual environment (much faster)</span></span>
+<span><span class="co">#&gt; py_add &lt;- function(</span></span>
+<span><span class="co">#&gt;     x = 5,</span></span>
+<span><span class="co">#&gt;     y = 10</span></span>
+<span><span class="co">#&gt; ){</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   # source specific python script</span></span>
+<span><span class="co">#&gt;   py_script &lt;- file.path(EXAMPLE_PYTHON_DIR, 'script-add.py')</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   # Source python script if python is installed</span></span>
+<span><span class="co">#&gt;   if(isTRUE(python_is_installed())){</span></span>
+<span><span class="co">#&gt;    reticulate::source_python(py_script)</span></span>
+<span><span class="co">#&gt;   }</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   # `py_add` is a function defined in `py_script`</span></span>
+<span><span class="co">#&gt;   sum &lt;- py_add(x, y)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   return(sum)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; })</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Assign the function to use it</span></span>
 <span><span class="va">py_add</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pythonR_examples.html">get_py_example</a></span><span class="op">(</span><span class="st">"py_add"</span><span class="op">)</span></span>
@@ -227,7 +241,7 @@ reference when developing your own:</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
       </footer>
